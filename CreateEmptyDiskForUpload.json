@@ -14,9 +14,9 @@
         "type": "string",
         "defaultValue": "/subscriptions/0f5f616b-195b-4985-8799-c6e4bda8b7ea/resourceGroups/rg8ab28563-233b-4081-838f-f5eb34f66640/providers/Microsoft.Compute/diskaccesses/myDiskAccessForPrivateLinks"
       },
-      "dataDiskSizeInGb": {
-        "type": "string",
-        "defaultValue": "100"
+      "uploadSizeBytes": {
+        "type": "int",
+        "defaultValue": 53687091200
       },
       "networkAccessPolicy": {
         "type": "string",
@@ -45,11 +45,11 @@
         },
         "properties": {
           "creationData": {
-            "createOption": "Empty"
+            "createOption": "Upload",
+            "uploadSizeBytes": "[parameters('uploadSizeBytes')]"
           },
-          "diskSizeGB": "[parameters('dataDiskSizeInGb')]",
           "networkAccessPolicy": "[parameters('networkAccessPolicy')]",
-          "diskAccessId": "[parameters('networkAccessPolicy')]"
+          "diskAccessId": "[parameters('diskAccessId')]"
       }
       }
     ]
