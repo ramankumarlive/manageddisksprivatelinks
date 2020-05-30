@@ -15,8 +15,7 @@
         "defaultValue": "/subscriptions/0f5f616b-195b-4985-8799-c6e4bda8b7ea/resourceGroups/rg8ab28563-233b-4081-838f-f5eb34f66640/providers/Microsoft.Compute/diskaccesses/myDiskAccessForPrivateLinks"
       },
       "uploadSizeBytes": {
-        "type": "int",
-        "defaultValue": 53687091200
+        "type": "int"
       },
       "networkAccessPolicy": {
         "type": "string",
