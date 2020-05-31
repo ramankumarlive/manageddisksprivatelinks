@@ -2,6 +2,7 @@
 
 This repository contains samples templates and scripts for setting up and testing private links for exporting/importing Managed Disks.
 
+## Overview
 Customers can export from or import to Managed Disks without attaching them to a VM. If a user has sufficient permissions, he/she can generate a Shared Access Signature (SAS) URI of the underlying VHD of Managed Disks and then use the SAS URI to download/upload VHD. A SAS URI consists of the FQDN of the underlying hidden storage account where VHD is stored as a page blob and query parameters comprising the SAS token that has all of the information necessary to grant read/write access to the VHD. SAS gives persistent and unaudited access to the disks without any trace. Customers are worried that a malicious employee can download their data from home without any trace.  
 
 Networking Resource Provider (NRP) provides a mechanism, named [Private Links](https://docs.microsoft.com/en-us/azure/private-link/private-link-overview) that allows an onboarded Azure services such as Storage accounts, Azure SQL to associate a resource to a NRP private endpoint resource (associated to a VNET/subnet). Once the private endpoint is associated, network reads from the private endpoint are tagged with the ID of the private link. This lets the service filter out reads/writes from outside the customer's private endpoint.  Moreover, Traffic between customers' virtual network and the service travels the Microsoft backbone network. Customers are not required to expose their services to the public internet. 
