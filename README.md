@@ -170,7 +170,7 @@ az network private-dns record-set a add-record --record-set-name $storageAccount
       2. Copy https://aka.ms/downloadazcopy-v10-windows in the Open text box 
       3. Hit enter
 
-3. Create a snapshot of the OS disk by associating it with the DiskAccess Object and setting the networkAccessPolicy to AllowPrivate. The VHD of the snapshot will be exported (downloaded) to the VM in the same Subnet as the private endpoint associated with the DiskAccess object. 
+3. Create a snapshot of the OS disk of the VM created in step #1 by associating the snapshot with the DiskAccess Object and setting the networkAccessPolicy to AllowPrivate. You will export (download) the VHD of the snapshot to the VM created in prerequisite #1 in the same Subnet as the private endpoint associated with the DiskAccess object. 
    ```cli
    diskAccessId=$(az resource show -n $diskAccessName -g $resourceGroupName --namespace Microsoft.Compute --resource-type diskAccesses --query [id] -o tsv)
 
@@ -183,7 +183,7 @@ az network private-dns record-set a add-record --record-set-name $storageAccount
       --parameters "snapshotNameSecuredWithPL=$snapshotNameSecuredWithPL" "sourceResourceId=$osDiskId" "diskAccessId=$diskAccessId" "region=$region" "networkAccessPolicy=AllowPrivate" 
 
    ```
-4. Create another snapshot of the OS disk without associating it with the DiskAccess. The VHD of the snapshot will be downloaded to the VM created in prerequisite step #2, which is not created in the Subnet with the private endpoint. Then the VHD will be uploaded to a disk associated with a DiskAccess object. 
+4. Create another snapshot of the OS disk without associating it with the DiskAccess object. You will download the VHD of the snapshot in the VM created in prerequisite #2 in the Subnet without the private endpoint. You will try to upload the VHD to a disk associated with the DiskAccess object, which will result in failure.
    ```cli
    snapshotNameNotSecuredWithPL=${osDiskName}_snapshot2
    az snapshot create -n $snapshotNameNotSecuredWithPL -g $resourceGroupName --source $osDiskId
