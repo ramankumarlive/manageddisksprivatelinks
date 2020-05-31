@@ -64,7 +64,10 @@ az network private-dns record-set a add-record --record-set-name $storageAccount
 ```
 
 ## Prerequisites for testing Private Links for exporting/importing Managed Disks using Azure CLI
-### VM1: Creat a VM in the same VNET and Subnet that has the private endpoint to the DiskAccess object.
+
+### 1. Creat a VM in the same VNET and Subnet that has the private endpoint to the DiskAccess object.
+##### a. Create the VM using CLI ##### 
+
 ```cli
 region=CentralUSEUAP
 resourceGroupName=privatelinkstesting 
@@ -77,19 +80,16 @@ vmSize=Standard_DS3_V2
 
 imagePublisher=MicrosoftWindowsServer
 imageOffer=WindowsServer
+# Use a smaller image to make the testing faster 
 imageSku=2019-Datacenter-smalldisk 
 adminUserName=ramankum
 adminPassword=@Password123
 diskAccessName=myDiskAccessForPrivateLinks
-
-# Use a smaller image to make the testing faster 
+ 
 latestImageVersion=$(az vm image list -p $imagePublisher -s $imageSku --all \
 --query "[?offer=='$imageOffer'].version" -o tsv | sort -u | tail -n 1)
 
 imageURN=${imagePublisher}:${imageOffer}:${imageSku}:${latestImageVersion}
-
-diskAccessId=$(az resource show -n $diskAccessName -g $resourceGroupName --namespace Microsoft.Compute --resource-type diskAccesses --query [id] -o tsv)
-
 
 az vm create -g $resourceGroupName -n $vmNameInSubnetWithPL -l $region --image $imageURN --size $vmSize --data-disk-sizes-gb 128 \
 --vnet-name $vnetNameWithPL --subnet $subnetNameWithPL --public-ip-address-dns-name $publicIPNameForVMInSubnetWithPL \
@@ -98,14 +98,30 @@ az vm create -g $resourceGroupName -n $vmNameInSubnetWithPL -l $region --image $
 computerName=${publicIPNameForVMInSubnetWithPL}.${region}.cloudapp.azure.com
 
 echo $computerName
+```
 
-# Run the command below in a seperate command prompt by replacing the ComputerName with the text returned in the above step
-mstsc /v:computerName
+##### 2. Login into the VM by following the instructions below. Please replace the *ComputerName* with the text returned in the above step to #####
+1. Press Windows+R
+2. Copy mstsc /v:*computerName* in the Open text box 
+3. Hit enter
 
-https://docs.microsoft.com/en-us/windows-server/storage/disk-management/extend-a-basic-volume#to-extend-a-volume-by-using-disk-management
 
-https://aka.ms/downloadazcopy-v10-windows
+#### 3. Expand the C drive (OS volume) by following instructions below. You will need space to copy VHD of Managed Disks. #####
+1. Select and hold (or right-click) the Start button and then select Windows PowerShell (Admin).
+2. Enter the following command to resize the volume to the maximum size, specifying the drive letter of the volume you want to extend in the $drive_letter variable:
 
+```PowerShell
+# Script to get the partition sizes and then resize the volume
+$size = (Get-PartitionSupportedSize -DriveLetter "C")
+Resize-Partition -DriveLetter "C" -Size $size.SizeMax
+```
+
+#### 4. Download AzCopy tool by following the instructions below #####
+1. Press Windows+R
+2. Copy https://aka.ms/downloadazcopy-v10-windows in the Open text box 
+3. Hit enter
+
+### Creat a VM in a new VNET and Subnet that has no private endpoint to the DiskAccess object
 region=CentralUSEUAP
 resourceGroupName=privatelinkstesting 
 
@@ -126,7 +142,7 @@ imageSku=2019-Datacenter-smalldisk
 adminUserName=ramankum
 adminPassword=@Password123
 diskAccessName=myDiskAccessForPrivateLinks
-# Creat a VM in a new VNET and Subnet that has no private endpoint to the DiskAccess object so that secured disks cannot be exported to or imported from the VM
+
 az vm create -g $resourceGroupName -n $vmNameInSubnetWithoutPL -l $region --image $imageURN --size $vmSize --os-disk-size-gb 128 \
 --vnet-name $subnetNameWithoutPL --subnet $subnetNameWithoutPL --public-ip-address-dns-name $publicIPNameForVMInSubnetWithoutPL \
 --admin-username $adminUserName --admin-password $adminPassword
@@ -140,6 +156,8 @@ mstsc /v:computerName
 
 https://docs.microsoft.com/en-us/windows-server/storage/disk-management/extend-a-basic-volume#to-extend-a-volume-by-using-disk-management
 https://aka.ms/downloadazcopy-v10-windows
+
+diskAccessId=$(az resource show -n $diskAccessName -g $resourceGroupName --namespace Microsoft.Compute --resource-type diskAccesses --query [id] -o tsv)
 
 osDiskId=$(az vm show -g $resourceGroupName -n $vmNameInSubnetWithPL --query 'storageProfile.osDisk.managedDisk.id' -o tsv)
 osDiskName=$(az vm show -g $resourceGroupName -n $vmNameInSubnetWithPL --query 'storageProfile.osDisk.name' -o tsv)
