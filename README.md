@@ -122,6 +122,7 @@ az network private-dns record-set a add-record --record-set-name $storageAccount
       3. Hit enter
 
 2. Creat a VM in a new VNET and Subnet that has no private endpoint associated with the DiskAccess object
+
    a. Create the VM using CLI
    ```cli
    region=CentralUSEUAP
