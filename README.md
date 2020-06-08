@@ -189,7 +189,7 @@ az network private-dns record-set a add-record --record-set-name $storageAccount
    az snapshot create -n $snapshotNameNotSecuredWithPL -g $resourceGroupName --source $osDiskId
    ```
 
-## Test that the VHD of a snapshot associated with a DiskAccess object can be exported (downloaded) only from a VM in a VNET with the private endpoint associated with the DiskAccess object
+## Test that the VHD of a snapshot associated with a DiskAccess object can be exported (downloaded) only from a VM in the Subnet with the private endpoint associated with the DiskAccess object
 1. Generate the SAS URI for the snapshot created in prerequisite #3
    ```cli
    az snapshot grant-access -n $snapshotNameSecuredWithPL -g $resourceGroupName --duration-in-seconds 86400 --query [accessSas] -o tsv
@@ -201,7 +201,7 @@ az network private-dns record-set a add-record --record-set-name $storageAccount
 3. Run the AzCopy command in the VM created in prerequisite step #1. You should be able to export (download) the VHD.
 4. Run the AzCopy command in the VM created in prerequisite step #2. You should *NOT* be able to export (download) the VHD.
 
-## Test that a VHD can be uploaded to disk associated with a DiskAccess object only from a VM in a VNET with the private endpoint associated with the DiskAccess object
+## Test that a VHD can be uploaded to a disk associated with a DiskAccess object only from a VM in a Subnet with the private endpoint associated with the DiskAccess object
 1. Generate the SAS URI for the snapshot created in prerequisite #4 and copy it. 
    ```cli
    az snapshot grant-access -n $snapshotNameNotSecuredWithPL -g $resourceGroupName --duration-in-seconds 86400 --query [accessSas] -o tsv
@@ -234,7 +234,7 @@ az network private-dns record-set a add-record --record-set-name $storageAccount
 8. Run the AzCopy command again inside the VM created in prerequisite step #2. You should *NOT* be able to import (upload) the VHD to the disk.
 
 
-## Test that the Manual Approval of Private Endpoint Connection is not supported. You should get OperationNotAllowed error.
+## Test the Manual Approval of Private Endpoint Connection.
 
  ```cli
  subscriptionId=dd80b94e-0463-4a65-8d04-c94f403879dc
@@ -263,7 +263,7 @@ az network private-dns record-set a add-record --record-set-name $storageAccount
  --connection-name $privateEndPointConnectionName --manual-request true --request-message 'Please approve my request'
   ```
  
-## Test that Managed Disks doesn't support private endpoint connections across subscriptions.
+## Test Private Endpoint Connection in a different subscription.
   ```cli
   diskAccessSubscriptionId=dd80b94e-0463-4a65-8d04-c94f403879dc
   vnetSubscriptionId=6492b1f7-f219-446b-b509-314e17e1efb0
