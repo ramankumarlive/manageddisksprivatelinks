@@ -40,7 +40,8 @@
             "sourceResourceId":"[parameters('sourceResourceId')]"
           },
           "networkAccessPolicy": "[parameters('networkAccessPolicy')]",
-          "diskAccessId": "[parameters('diskAccessId')]"
+          "diskAccessId": "[parameters('diskAccessId')]",
+          "incremental": true
       }
       }
     ]

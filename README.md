@@ -15,7 +15,7 @@ Disk users must associate a disk with an instance of DiskAccess to export/import
 
 ```cli
 subscriptionId=dd80b94e-0463-4a65-8d04-c94f403879dc
-resourceGroupName=privatelinkstesting 
+resourceGroupName=privatelinkstesting
 region=CentralUSEUAP
 diskAccessName=myDiskAccessForPrivateLinks
 vnetName=myVNETForPrivateLinks
@@ -75,7 +75,7 @@ az network private-dns record-set a add-record --record-set-name $storageAccount
 
    vnetNameWithPL=myVNETForPrivateLinks
    subnetNameWithPL=mysubnetForPrivateLinks
-   vmNameInSubnetWithPL=vminsubnetwpl
+   vmNameInSubnetWithPL=vminsubnetwpl9
    publicIPNameForVMInSubnetWithPL=${vmNameInSubnetWithPL}ip
    vmSize=Standard_DS3_V2
 
