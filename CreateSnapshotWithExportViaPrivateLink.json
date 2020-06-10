@@ -12,6 +12,10 @@
         "type": "string",
         "defaultValue": "/subscriptions/0f5f616b-195b-4985-8799-c6e4bda8b7ea/resourceGroups/rg8ab28563-233b-4081-838f-f5eb34f66640/providers/Microsoft.Compute/diskaccesses/myDiskAccessForPrivateLinks"
       },
+      "Incremental": {
+        "type": "bool",
+        "defaultValue": true
+      },
       "networkAccessPolicy": {
         "type": "string",
         "defaultValue": "AllowPrivate",
@@ -41,7 +45,7 @@
           },
           "networkAccessPolicy": "[parameters('networkAccessPolicy')]",
           "diskAccessId": "[parameters('diskAccessId')]",
-          "incremental": true
+          "incremental": "[parameters('Incremental')]"
       }
       }
     ]
