@@ -6,22 +6,33 @@ You can create an instance of the new resource called DiskAccess and link it to 
 
 You can set the NetworkAccessPolicy property to DenyAll to prevent anybody from generating the SAS URI for a disk or a snapshot. The default value for the NetworkAccessPolicy property is AllowAll. 
 
-## Create an instance of DiskAccess using Azure CLI
+## Login into your subscription and set your variables
 
 ```azurecli-interactive
-subscriptionId=dd80b94e-0463-4a65-8d04-c94f403879dc
-resourceGroupName=privatelinkstesting
+
+subscriptionId=yourSubscriptionId
+resourceGroupName=yourResourceGroupName
 region=CentralUSEUAP
-diskAccessName=myDiskAccessForPrivateLinks
-vnetName=myVNETForPrivateLinks
-subnetName=mysubnetForPrivateLinks
-privateEndPointName=myPrivateLinkForSecureMDExportImport
-privateEndPointConnectionName=myPrivateLinkConnection
+diskAccessName=yourDiskAccessForPrivateLinks
+vnetName=yourVNETForPrivateLinks
+subnetName=yourSubnetForPrivateLinks
+privateEndPointName=yourPrivateLinkForSecureMDExportImport
+privateEndPointConnectionName=yourPrivateLinkConnection
+
+#The name of an existing disk which is the source of the snapshot
+sourceDiskName=yourSourceDiskForSnapshot
+
+#The name of the new snapshot which will be secured via Private Links
+snapshotNameSecuredWithPL=yourSnapshotNameSecuredWithPL
 
 az login
 
 az account set --subscription $subscriptionId
 
+```
+
+## Create an instance of DiskAccess using Azure CLI
+```azurecli-interactive
 az group deployment create -g $resourceGroupName \
 --template-uri "https://raw.githubusercontent.com/ramankumarlive/manageddisksprivatelinks/master/CreateDiskAccess.json" \
 --parameters "region=$region" "diskAccessName=$diskAccessName"
@@ -82,4 +93,15 @@ az network private-endpoint dns-zone-group create \
    --private-dns-zone "privatelink.database.windows.net" \
    --zone-name disks
 ```
-
+## Create a snapshot of a disk protected with Private Links
+   ```cli
+   diskId=$(az disk show -n $sourceDiskName -g $resourceGroupName --query [id] -o tsv)
+   
+   az group deployment create -g $resourceGroupName \
+      --template-uri "https://raw.githubusercontent.com/ramankumarlive/manageddisksprivatelinks/master/CreateSnapshotWithExportViaPrivateLink.json" \
+      --parameters "snapshotNameSecuredWithPL=$snapshotNameSecuredWithPL" \
+      "sourceResourceId=$diskId" \
+      "diskAccessId=$diskAccessId" \
+      "region=$region" \
+      "networkAccessPolicy=AllowPrivate" 
+```
