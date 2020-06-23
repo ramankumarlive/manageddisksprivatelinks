@@ -34,19 +34,30 @@ diskAccessId=$(az resource show -n $diskAccessName -g $resourceGroupName --names
 Network policies like network security groups (NSG) are not supported for private endpoints. In order to deploy a Private Endpoint on a given subnet, an explicit disable setting is required on that subnet. 
 
 ```azurecli-interactive
-az network vnet create --name $vnetName --resource-group $resourceGroupName --subnet-name $subnetName
+az network vnet create --resource-group $resourceGroupName \
+    --name $vnetName \
+    --subnet-name $subnetName
 ```
 ## Disable subnet private endpoint policies
 
 Azure deploys resources to a subnet within a virtual network, so you need to update the subnet to disable private endpoint network policies. 
 
 ```azurecli-interactive
-az network vnet subnet update --name $subnetName --resource-group $resourceGroupName --vnet-name $vnetName --disable-private-endpoint-network-policies true
+az network vnet subnet update --resource-group $resourceGroupName \
+    --name $subnetName  \
+    --vnet-name $vnetName \
+    --disable-private-endpoint-network-policies true
 ```
 ## Create a private endpoint for the DiskAccess object
 
 ```azurecli-interactive
-az network private-endpoint create --name $privateEndPointName --resource-group $resourceGroupName --vnet-name $vnetName  --subnet $subnetName --private-connection-resource-id $diskAccessId --group-ids disks --connection-name $privateEndPointConnectionName
+az network private-endpoint create --resource-group $resourceGroupName \
+    --name $privateEndPointName \
+    --vnet-name $vnetName  \
+    --subnet $subnetName \
+    --private-connection-resource-id $diskAccessId \
+    --group-ids disks \
+    --connection-name $privateEndPointConnectionName
 ```
 
 ## Configure the Private DNS Zone
