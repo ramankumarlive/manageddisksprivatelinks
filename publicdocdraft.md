@@ -49,3 +49,26 @@ az network vnet subnet update --name $subnetName --resource-group $resourceGroup
 az network private-endpoint create --name $privateEndPointName --resource-group $resourceGroupName --vnet-name $vnetName  --subnet $subnetName --private-connection-resource-id $diskAccessId --group-ids disks --connection-name $privateEndPointConnectionName
 ```
 
+## Configure the Private DNS Zone
+
+Create a Private DNS Zone for Storage blob domain, create an association link with the Virtual Network
+and create a DNS Zone Group to associate the private endpoint with the Private DNS Zone. 
+
+```azurecli-interactive
+az network private-dns zone create --resource-group $resourceGroupName \ 
+    --name "privatelink.blob.core.windows.net"
+
+az network private-dns link vnet create --resource-group $resourceGroupName \
+    --zone-name "privatelink.blob.core.windows.net" \
+    --name yourDNSLink \
+    --virtual-network $vnetName \
+    --registration-enabled false 
+
+az network private-endpoint dns-zone-group create \
+   --resource-group $resourceGroupName \
+   --endpoint-name $privateEndPointName \
+   --name yourZoneGroup \
+   --private-dns-zone "privatelink.database.windows.net" \
+   --zone-name disks
+```
+
